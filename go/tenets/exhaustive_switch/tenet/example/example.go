@@ -1,59 +1,82 @@
 package main
 
-import "math/rand"
+import (
+	"math/rand"
 
-type fish int
-
-const (
-	onefish fish = iota
-	twofish
-	redfish
-	bluefish
+	"github.com/lingo-reviews/tenets/go/tenets/exhaustive_switch/tenet/example/mypack"
 )
 
-func drianPond() fish {
-	return fish(rand.Intn(3))
+type Foo int
+
+const (
+	Bar Foo = iota
+	Baz
+)
+
+func drianPond() mypack.Fish {
+	return mypack.Fish(rand.Intn(3))
 }
 
 func main() {
+
+	// y := 10
+
+	// // lingo:exhaustive_switch
+	//
+	// switch y + 10 {
+	// case 22:
+	// default:
+	// }
+
+	x := Bar
+
+	// lingo:exhaustive_switch
+	switch x {
+	case Baz:
+	}
+
+	// lingo:exhaustive_switch
+	switch {
+	default:
+	}
 
 	p := drianPond()
 
 	// lingo:exhaustive_switch
 	switch p {
-	case onefish:
+	case mypack.Onefish:
 	default:
 	}
 
 	// lingo:exhaustive_switch
 	switch p {
-	case onefish, twofish:
+	case mypack.Onefish, mypack.Twofish:
 	default:
 	}
 
 	// lingo:exhaustive_switch
 	switch p {
-	case redfish:
-	case bluefish:
+	case mypack.Redfish:
+	case mypack.Bluefish:
 	default:
 	}
 
 	// lingo:exhaustive_switch
 	switch p {
-	case onefish, twofish:
-	case redfish:
+	case mypack.Onefish, mypack.Twofish:
+	case mypack.Redfish:
 	default:
 	}
 
 	// lingo:exhaustive_switch
 	switch p {
-	case onefish:
+	case mypack.Onefish:
 	default:
 	}
 
 	// should be ignored
 	switch p {
-	case onefish:
+	case mypack.Onefish:
 	default:
 	}
 

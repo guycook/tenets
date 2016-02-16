@@ -1,9 +1,13 @@
 package astutil
 
 import (
+	"fmt"
 	"go/ast"
+	"go/build"
+	"go/token"
 
 	"github.com/juju/errors"
+	"golang.org/x/tools/oracle"
 )
 
 // SameIdent returns true if a and b are the same.
@@ -220,4 +224,41 @@ func TypeOf(ident *ast.Ident) (string, error) {
 		// TODO(waigani) log
 	}
 	return "", errors.New("could not find type")
+}
+
+// DONT USE THIS it's just a proof of concept
+//func TypeOf2(ident *ast.Ident, pos *token.Position) (string, error) {
+func TypeOf2(ident *ast.Ident, fset *token.FileSet) (string, []string, error) {
+	pos := fset.PositionFor(ident.Pos(), false)
+	q := &oracle.Query{
+		Mode:  "describe",
+		Pos:   fmt.Sprintf("%s:#%d", pos.Filename, pos.Offset),
+		Build: &build.Default,
+	}
+	if err := oracle.Run(q); err != nil {
+		return "", nil, err
+	}
+
+	ss := make([]string, 0)
+	ss = append(ss, q.GetResult().(oracle.ResultObject).String())
+
+	//return q.GetResult().GetType(), q.GetResult().(oracle.ResultObject).Names(), nil
+	return q.GetResult().GetType(), ss, nil
+
+	// buf := new(bytes.Buffer)
+	// q.WriteTo(buf)
+
+	// //return buf.String(), nil
+
+	// r := regexp.MustCompile("reference to var [^\\s]+ ([^\\s]+)")
+	// t := r.FindStringSubmatch(buf.String())
+	// if len(t) < 2 {
+	// 	return "", nil, errors.New(strings.Join([]string{"Unexpected oracle format: ", buf.String()}, ""))
+	// }
+
+	// //return strings.Join(t, ""), nil
+
+	// t = strings.Split(t[1], "/")
+
+	// return t[len(t)-1], nil
 }
